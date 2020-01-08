@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { databaseConfig } from './config/database.config';
+
+import { QuestionsModule } from './questions/questions.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      envFilePath: '.dev.env',
-    }),
-  ],
+  imports: [TypeOrmModule.forRoot(databaseConfig), QuestionsModule],
 })
 export class AppModule {}
