@@ -6,6 +6,7 @@ import { Question } from './entities/question.entity';
 import { CreateQuestionDto } from './dtos/create-question.dto';
 import { UpdateQuestionDto } from './dtos/update-question.dto';
 import { QuestionsFilterDto } from './dtos/questions-filter.dto';
+import { FindQuestionOptionsDto } from './dtos/find-question-options.dto';
 
 @Injectable()
 export class QuestionsService {
@@ -29,13 +30,26 @@ export class QuestionsService {
     return questions;
   }
 
-  async findById(id: number): Promise<Question> {
+  async findById(
+    id: number,
+    findQuestionOptionsDto: FindQuestionOptionsDto,
+  ): Promise<Question> {
     try {
       const question = await this.questionRepository.findOneOrFail(id);
 
       this.logger.verbose(
-        `findById() returned this question: ${JSON.stringify(question)}.`,
+        `findById(${id}, ${JSON.stringify(
+          findQuestionOptionsDto,
+        )}) returned this question: ${JSON.stringify(question)}.`,
       );
+
+      const { view } = findQuestionOptionsDto;
+
+      this.logger.log({ view });
+
+      if (view && (view as any) === 'true') {
+        await this.view(question);
+      }
 
       return question;
     } catch (error) {
@@ -87,15 +101,11 @@ export class QuestionsService {
     }
   }
 
-  async view(id: number): Promise<void> {
-    const question = await this.findById(id);
-
+  private async view(question: Question): Promise<void> {
     question.views++;
 
     await question.save();
 
-    this.logger.verbose(
-      `view(${id}) changed to this: ${JSON.stringify(question)}.`,
-    );
+    this.logger.verbose(`views of question has been incremented`);
   }
 }

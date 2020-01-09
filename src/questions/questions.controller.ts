@@ -18,6 +18,7 @@ import { Question } from './entities/question.entity';
 import { CreateQuestionDto } from './dtos/create-question.dto';
 import { UpdateQuestionDto } from './dtos/update-question.dto';
 import { QuestionsFilterDto } from './dtos/questions-filter.dto';
+import { FindQuestionOptionsDto } from './dtos/find-question-options.dto';
 
 @Controller('questions')
 export class QuestionsController {
@@ -31,8 +32,11 @@ export class QuestionsController {
   }
 
   @Get(':id')
-  findOneById(@Param('id', ParseIntPipe) id: number): Promise<Question> {
-    return this.questionsService.findById(id);
+  findOneById(
+    @Param('id', ParseIntPipe) id: number,
+    @Query(ValidationPipe) findQuestionOptionsDto: FindQuestionOptionsDto,
+  ): Promise<Question> {
+    return this.questionsService.findById(id, findQuestionOptionsDto);
   }
 
   @Post()
@@ -48,11 +52,6 @@ export class QuestionsController {
     @Body(ValidationPipe) updateQuestionDto: UpdateQuestionDto,
   ): Promise<void> {
     return this.questionsService.update(id, updateQuestionDto);
-  }
-
-  @Patch(':id/view')
-  view(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.questionsService.view(id);
   }
 
   @Delete(':id')
