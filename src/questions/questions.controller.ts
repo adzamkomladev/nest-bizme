@@ -45,8 +45,8 @@ export class QuestionsController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateQuestionDto: UpdateQuestionDto,
-  ): Promise<Question> {
+    @Body(ValidationPipe) updateQuestionDto: UpdateQuestionDto,
+  ): Promise<void> {
     return this.questionsService.update(id, updateQuestionDto);
   }
 

@@ -61,25 +61,18 @@ export class QuestionsService {
   async update(
     id: number,
     updateQuestionDto: UpdateQuestionDto,
-  ): Promise<Question> {
-    const question = await this.findById(id);
+  ): Promise<void> {
+    const result = await this.questionRepository.update(id, updateQuestionDto);
 
     this.logger.verbose(
-      `This is data to be used to update question: ${JSON.stringify(
+      `update(${id}, ${JSON.stringify(
         updateQuestionDto,
-      )}.`,
+      )}) returned this: ${JSON.stringify(result)}.`,
     );
 
-    const { title, body } = updateQuestionDto;
-
-    question.title = title ?? question.title;
-    question.body = body ?? question.body;
-
-    const saved = await question.save();
-
-    this.logger.verbose(`update() returned this: ${JSON.stringify(saved)}.`);
-
-    return saved;
+    if (result.affected === 0) {
+      throw new NotFoundException(`Question with id: '${id}' not found!`);
+    }
   }
 
   async delete(id: number): Promise<void> {
