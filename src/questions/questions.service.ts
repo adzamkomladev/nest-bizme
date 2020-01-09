@@ -81,6 +81,10 @@ export class QuestionsService {
     this.logger.verbose(
       `delete(${id}) returned this: ${JSON.stringify(result)}.`,
     );
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Question with id: '${id}' not found!`);
+    }
   }
 
   async view(id: number): Promise<void> {
