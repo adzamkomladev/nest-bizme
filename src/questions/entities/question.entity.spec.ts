@@ -1,7 +1,7 @@
-import { QuestionEntity } from './question.entity';
+import { Question } from './question.entity';
 
 describe('QuestionEntity', () => {
   it('should be defined', () => {
-    expect(new QuestionEntity()).toBeDefined();
+    expect(new Question()).toBeDefined();
   });
 });

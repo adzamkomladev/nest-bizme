@@ -25,7 +25,7 @@ export class QuestionRepository extends Repository<Question> {
   createQuestion(createQuestionDto: CreateQuestionDto): Promise<Question> {
     const { title, body } = createQuestionDto;
 
-    const question = new Question();
+    const question = this.create();
     question.title = title;
     question.body = body;
 
