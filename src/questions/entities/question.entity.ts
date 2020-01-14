@@ -5,11 +5,13 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { Tag } from '../../tags/entities/tag.entity';
+import { Answer } from '../../answers/entities/answer.entity';
 
 @Entity()
 export class Question extends BaseEntity {
@@ -24,6 +26,12 @@ export class Question extends BaseEntity {
 
   @Column({ default: 0 })
   views: number;
+
+  @OneToMany(
+    type => Answer,
+    answer => answer.question,
+  )
+  answers: Answer[];
 
   @ManyToMany(
     type => Tag,

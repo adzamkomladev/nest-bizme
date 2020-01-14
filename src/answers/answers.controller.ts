@@ -21,7 +21,12 @@ import { UpdateAnswerDto } from './dtos/update-answer.dto';
 import { CreateAnswerDto } from './dtos/create-answer.dto';
 
 @Controller('answers')
-@UsePipes(ValidationPipe)
+@UsePipes(
+  new ValidationPipe({
+    transform: true,
+    transformOptions: { enableImplicitConversion: true },
+  }),
+)
 export class AnswersController {
   constructor(private readonly answersService: AnswersService) {}
 

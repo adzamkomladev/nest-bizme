@@ -21,7 +21,12 @@ import { CreateTagDto } from './dtos/create-tag.dto';
 import { UpdateTagDto } from './dtos/update-tag.dto';
 
 @Controller('tags')
-@UsePipes(ValidationPipe)
+@UsePipes(
+  new ValidationPipe({
+    transform: true,
+    transformOptions: { enableImplicitConversion: true },
+  }),
+)
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
