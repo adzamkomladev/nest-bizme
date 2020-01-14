@@ -11,7 +11,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import { QuestionsService } from './questions.service';
+import { QuestionsService } from './services/questions.service';
 
 import { Question } from './entities/question.entity';
 

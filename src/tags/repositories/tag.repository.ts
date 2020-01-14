@@ -6,6 +6,7 @@ import { TagsFilterDto } from '../dtos/tags-filter.dto';
 
 @EntityRepository(Tag)
 export class TagRepository extends Repository<Tag> {
+
   filterQuestions(tagsFilterDto: TagsFilterDto): Promise<Tag[]> {
     const { search } = tagsFilterDto;
 

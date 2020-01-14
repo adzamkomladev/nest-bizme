@@ -1,17 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { QuestionRepository } from './repositories/question.repository';
+import { RelationshipHelpersService } from './relationship-helpers.service';
 
-import { Question } from './entities/question.entity';
+import { Question } from '../entities/question.entity';
 
-import { CreateQuestionDto } from './dtos/create-question.dto';
-import { UpdateQuestionDto } from './dtos/update-question.dto';
-import { QuestionsFilterDto } from './dtos/questions-filter.dto';
-import { FindQuestionOptionsDto } from './dtos/find-question-options.dto';
+import { QuestionRepository } from '../repositories/question.repository';
+
+import { CreateQuestionDto } from '../dtos/create-question.dto';
+import { UpdateQuestionDto } from '../dtos/update-question.dto';
+import { QuestionsFilterDto } from '../dtos/questions-filter.dto';
+import { FindQuestionOptionsDto } from '../dtos/find-question-options.dto';
 
 @Injectable()
 export class QuestionsService {
-  constructor(private readonly questionRepository: QuestionRepository) {}
+  constructor(
+    private readonly questionRepository: QuestionRepository,
+    private readonly relationshipHelpersService: RelationshipHelpersService,
+  ) {}
 
   findAll(questionsFilterDto: QuestionsFilterDto): Promise<Question[]> {
     return this.questionRepository.filterQuestions(questionsFilterDto);
@@ -22,7 +27,9 @@ export class QuestionsService {
     findQuestionOptionsDto: FindQuestionOptionsDto,
   ): Promise<Question> {
     try {
-      const question = await this.questionRepository.findOneOrFail(id);
+      const question = await this.questionRepository.findOneOrFail(id, {
+        relations: ['tags'],
+      });
 
       const { view } = findQuestionOptionsDto;
 
@@ -36,8 +43,12 @@ export class QuestionsService {
     }
   }
 
-  create(createQuestionDto: CreateQuestionDto): Promise<Question> {
-    return this.questionRepository.createQuestion(createQuestionDto);
+  async create(createQuestionDto: CreateQuestionDto): Promise<Question> {
+    const { tagIds } = createQuestionDto;
+
+    const tags = await this.relationshipHelpersService.findAllTagsByIds(tagIds);
+
+    return this.questionRepository.createQuestion(createQuestionDto, tags);
   }
 
   async update(

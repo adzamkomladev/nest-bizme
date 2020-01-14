@@ -1,6 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
 
 import { Question } from '../entities/question.entity';
+import { Tag } from '../../tags/entities/tag.entity';
 
 import { CreateQuestionDto } from '../dtos/create-question.dto';
 import { QuestionsFilterDto } from '../dtos/questions-filter.dto';
@@ -22,12 +23,16 @@ export class QuestionRepository extends Repository<Question> {
     return query.getMany();
   }
 
-  createQuestion(createQuestionDto: CreateQuestionDto): Promise<Question> {
+  createQuestion(
+    createQuestionDto: CreateQuestionDto,
+    tags: Tag[],
+  ): Promise<Question> {
     const { title, body } = createQuestionDto;
 
     const question = this.create();
     question.title = title;
     question.body = body;
+    question.tags = tags;
 
     return question.save();
   }

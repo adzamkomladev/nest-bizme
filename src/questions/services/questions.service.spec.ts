@@ -3,11 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { QuestionsService } from './questions.service';
 
-import { QuestionRepository } from './repositories/question.repository';
+import { QuestionRepository } from '../repositories/question.repository';
 
-import { QuestionsFilterDto } from './dtos/questions-filter.dto';
-import { CreateQuestionDto } from './dtos/create-question.dto';
-import { UpdateQuestionDto } from './dtos/update-question.dto';
+import { QuestionsFilterDto } from '../dtos/questions-filter.dto';
+import { CreateQuestionDto } from '../dtos/create-question.dto';
+import { UpdateQuestionDto } from '../dtos/update-question.dto';
 
 describe('QuestionsService', () => {
   const mockRepository = () => ({
