@@ -10,6 +10,7 @@ import { CreateQuestionDto } from '../dtos/create-question.dto';
 import { UpdateQuestionDto } from '../dtos/update-question.dto';
 import { QuestionsFilterDto } from '../dtos/questions-filter.dto';
 import { FindQuestionOptionsDto } from '../dtos/find-question-options.dto';
+import { BestAnswerDto } from '../dtos/best-answer.dto';
 
 @Injectable()
 export class QuestionsService {
@@ -28,7 +29,7 @@ export class QuestionsService {
   ): Promise<Question> {
     try {
       const question = await this.questionRepository.findOneOrFail(id, {
-        relations: ['tags'],
+        relations: ['tags', 'answers'],
       });
 
       const { view } = findQuestionOptionsDto;
@@ -67,6 +68,23 @@ export class QuestionsService {
 
     if (result.affected === 0) {
       throw new NotFoundException(`Question with id: '${id}' not found!`);
+    }
+  }
+
+  async setAnswerAsBest(
+    id: number,
+    bestAnswerDto: BestAnswerDto,
+  ): Promise<void> {
+    const { answerId } = bestAnswerDto;
+
+    if (await this.relationshipHelpersService.isAnswerPresent(answerId)) {
+      const question = await this.findById(id, {});
+
+      question.bestAnswerId = answerId;
+
+      await question.save();
+    } else {
+      throw new NotFoundException(`Answer with id: '${answerId} not found`);
     }
   }
 

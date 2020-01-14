@@ -11,5 +11,6 @@ import { AnswerRepository } from './repositories/answer.repository';
   imports: [TypeOrmModule.forFeature([AnswerRepository])],
   controllers: [AnswersController],
   providers: [AnswersService],
+  exports: [TypeOrmModule],
 })
 export class AnswersModule {}

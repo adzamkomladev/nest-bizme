@@ -40,6 +40,9 @@ export class Question extends BaseEntity {
   @JoinTable()
   tags: Tag[];
 
+  @Column({ nullable: true })
+  bestAnswerId: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
