@@ -8,9 +8,11 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 import { QuestionsService } from './services/questions.service';
 
@@ -48,11 +50,13 @@ export class QuestionsController {
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   create(@Body() createQuestionDto: CreateQuestionDto): Promise<Question> {
     return this.questionsService.create(createQuestionDto);
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard('jwt'))
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateQuestionDto: UpdateQuestionDto,
@@ -61,11 +65,13 @@ export class QuestionsController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
   delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.questionsService.delete(id);
   }
 
   @Patch(':id/best-answer')
+  @UseGuards(AuthGuard('jwt'))
   makeBestAnswer(
     @Param('id', ParseIntPipe) id: number,
     @Body() bestAnswerDto: BestAnswerDto,

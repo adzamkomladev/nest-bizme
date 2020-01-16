@@ -8,9 +8,11 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 import { AnswersService } from './answers.service';
 
@@ -27,6 +29,7 @@ import { CreateAnswerDto } from './dtos/create-answer.dto';
     transformOptions: { enableImplicitConversion: true },
   }),
 )
+@UseGuards(AuthGuard('jwt'))
 export class AnswersController {
   constructor(private readonly answersService: AnswersService) {}
 

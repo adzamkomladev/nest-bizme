@@ -8,9 +8,11 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 import { TagsService } from './tags.service';
 
@@ -41,11 +43,13 @@ export class TagsController {
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   create(@Body() createTagDto: CreateTagDto): Promise<Tag> {
     return this.tagsService.create(createTagDto);
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard('jwt'))
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTagDto: UpdateTagDto,
@@ -54,6 +58,7 @@ export class TagsController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
   delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.tagsService.delete(id);
   }
