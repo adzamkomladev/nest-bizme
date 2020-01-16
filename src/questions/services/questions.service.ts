@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { RelationshipHelpersService } from './relationship-helpers.service';
 
 import { Question } from '../entities/question.entity';
+import { User } from '../../auth/entities/user.entity';
 
 import { QuestionRepository } from '../repositories/question.repository';
 
@@ -44,27 +45,41 @@ export class QuestionsService {
     }
   }
 
-  async create(createQuestionDto: CreateQuestionDto): Promise<Question> {
+  async create(
+    createQuestionDto: CreateQuestionDto,
+    user: User,
+  ): Promise<Question> {
     const { tagIds } = createQuestionDto;
 
     const tags = await this.relationshipHelpersService.findAllTagsByIds(tagIds);
 
-    return this.questionRepository.createQuestion(createQuestionDto, tags);
+    return this.questionRepository.createQuestion(
+      createQuestionDto,
+      tags,
+      user,
+    );
   }
 
   async update(
     id: number,
     updateQuestionDto: UpdateQuestionDto,
+    user: User,
   ): Promise<void> {
-    const result = await this.questionRepository.update(id, updateQuestionDto);
+    const result = await this.questionRepository.update(
+      { id, userId: user.id },
+      updateQuestionDto,
+    );
 
     if (result.affected === 0) {
       throw new NotFoundException(`Question with id: '${id}' not found!`);
     }
   }
 
-  async delete(id: number): Promise<void> {
-    const result = await this.questionRepository.delete(id);
+  async delete(id: number, user: User): Promise<void> {
+    const result = await this.questionRepository.delete({
+      id,
+      userId: user.id,
+    });
 
     if (result.affected === 0) {
       throw new NotFoundException(`Question with id: '${id}' not found!`);
@@ -74,15 +89,23 @@ export class QuestionsService {
   async setAnswerAsBest(
     id: number,
     bestAnswerDto: BestAnswerDto,
+    user: User,
   ): Promise<void> {
     const { answerId } = bestAnswerDto;
 
     if (await this.relationshipHelpersService.isAnswerPresent(answerId)) {
-      const question = await this.findById(id, {});
+      try {
+        const question = await this.questionRepository.findOneOrFail({
+          id,
+          userId: user.id,
+        });
 
-      question.bestAnswerId = answerId;
+        question.bestAnswerId = answerId;
 
-      await question.save();
+        await question.save();
+      } catch (error) {
+        throw new NotFoundException(`Question with id: '${id}' not found!`);
+      }
     } else {
       throw new NotFoundException(`Answer with id: '${answerId} not found`);
     }

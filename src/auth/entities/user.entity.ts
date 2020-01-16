@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
@@ -11,6 +12,7 @@ import {
 import { Exclude } from 'class-transformer';
 
 import * as bcrypt from 'bcrypt';
+import { Question } from '../../questions/entities/question.entity';
 
 @Entity()
 @Unique(['email'])
@@ -28,6 +30,12 @@ export class User extends BaseEntity {
   @Column()
   @Exclude()
   salt: string;
+
+  @OneToMany(
+    type => Question,
+    question => question.user,
+  )
+  questions: Question[];
 
   @CreateDateColumn()
   createdAt: Date;

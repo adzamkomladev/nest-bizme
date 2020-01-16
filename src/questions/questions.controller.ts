@@ -16,7 +16,10 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { QuestionsService } from './services/questions.service';
 
+import { GetUser } from '../auth/decorators/get-user.decorator';
+
 import { Question } from './entities/question.entity';
+import { User } from '../auth/entities/user.entity';
 
 import { CreateQuestionDto } from './dtos/create-question.dto';
 import { UpdateQuestionDto } from './dtos/update-question.dto';
@@ -51,8 +54,11 @@ export class QuestionsController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  create(@Body() createQuestionDto: CreateQuestionDto): Promise<Question> {
-    return this.questionsService.create(createQuestionDto);
+  create(
+    @Body() createQuestionDto: CreateQuestionDto,
+    @GetUser() user: User,
+  ): Promise<Question> {
+    return this.questionsService.create(createQuestionDto, user);
   }
 
   @Patch(':id')
@@ -60,14 +66,18 @@ export class QuestionsController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateQuestionDto: UpdateQuestionDto,
+    @GetUser() user: User,
   ): Promise<void> {
-    return this.questionsService.update(id, updateQuestionDto);
+    return this.questionsService.update(id, updateQuestionDto, user);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'))
-  delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.questionsService.delete(id);
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<void> {
+    return this.questionsService.delete(id, user);
   }
 
   @Patch(':id/best-answer')
@@ -75,7 +85,8 @@ export class QuestionsController {
   makeBestAnswer(
     @Param('id', ParseIntPipe) id: number,
     @Body() bestAnswerDto: BestAnswerDto,
+    @GetUser() user: User,
   ): Promise<void> {
-    return this.questionsService.setAnswerAsBest(id, bestAnswerDto);
+    return this.questionsService.setAnswerAsBest(id, bestAnswerDto, user);
   }
 }

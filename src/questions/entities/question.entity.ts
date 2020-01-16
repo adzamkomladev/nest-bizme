@@ -5,6 +5,7 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -12,6 +13,7 @@ import {
 
 import { Tag } from '../../tags/entities/tag.entity';
 import { Answer } from '../../answers/entities/answer.entity';
+import { User } from '../../auth/entities/user.entity';
 
 @Entity()
 export class Question extends BaseEntity {
@@ -40,8 +42,17 @@ export class Question extends BaseEntity {
   @JoinTable()
   tags: Tag[];
 
+  @ManyToOne(
+    type => User,
+    user => user.questions,
+  )
+  user: User;
+
   @Column({ nullable: true })
   bestAnswerId: number;
+
+  @Column()
+  userId: number;
 
   @CreateDateColumn()
   createdAt: Date;
