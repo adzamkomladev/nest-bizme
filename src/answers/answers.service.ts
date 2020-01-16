@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import { Answer } from './entities/answer.entity';
+import { User } from '../auth/entities/user.entity';
 
 import { AnswerRepository } from './repositories/answer.repository';
 
@@ -35,16 +36,26 @@ export class AnswersService {
     }
   }
 
-  async create(createAnswerDto: CreateAnswerDto): Promise<Answer> {
-    const answer = await this.answerRepository.save(createAnswerDto);
+  async create(createAnswerDto: CreateAnswerDto, user: User): Promise<Answer> {
+    const answer = await this.answerRepository.save({
+      user,
+      ...createAnswerDto,
+    });
 
     this.logger.log({ answer });
 
     return answer;
   }
 
-  async update(id: number, updateAnswerDto: UpdateAnswerDto): Promise<void> {
-    const result = await this.answerRepository.update(id, updateAnswerDto);
+  async update(
+    id: number,
+    updateAnswerDto: UpdateAnswerDto,
+    user: User,
+  ): Promise<void> {
+    const result = await this.answerRepository.update(
+      { id, userId: user.id },
+      updateAnswerDto,
+    );
 
     if (result.affected === 0) {
       throw new NotFoundException(`Answer with id: '${id}' not found!`);
@@ -57,8 +68,8 @@ export class AnswersService {
     );
   }
 
-  async delete(id: number): Promise<void> {
-    const result = await this.answerRepository.delete(id);
+  async delete(id: number, user: User): Promise<void> {
+    const result = await this.answerRepository.delete({ id, userId: user.id });
 
     if (result.affected === 0) {
       throw new NotFoundException(`Answer with id: '${id}' not found!`);

@@ -7,7 +7,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
 import { Question } from '../../questions/entities/question.entity';
+import { User } from '../../auth/entities/user.entity';
 
 @Entity()
 export class Answer extends BaseEntity {
@@ -26,6 +28,12 @@ export class Answer extends BaseEntity {
   )
   question: Question;
 
+  @ManyToOne(
+    type => User,
+    user => user.answers,
+  )
+  user: User;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -34,4 +42,7 @@ export class Answer extends BaseEntity {
 
   @Column()
   questionId: number;
+
+  @Column()
+  userId: number;
 }

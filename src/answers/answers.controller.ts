@@ -21,6 +21,8 @@ import { Answer } from './entities/answer.entity';
 import { AnswersFilterDto } from './dtos/answers-filter.dto';
 import { UpdateAnswerDto } from './dtos/update-answer.dto';
 import { CreateAnswerDto } from './dtos/create-answer.dto';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import { User } from '../auth/entities/user.entity';
 
 @Controller('answers')
 @UsePipes(
@@ -44,20 +46,27 @@ export class AnswersController {
   }
 
   @Post()
-  create(@Body() createAnswerDto: CreateAnswerDto): Promise<Answer> {
-    return this.answersService.create(createAnswerDto);
+  create(
+    @Body() createAnswerDto: CreateAnswerDto,
+    @GetUser() user: User,
+  ): Promise<Answer> {
+    return this.answersService.create(createAnswerDto, user);
   }
 
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateAnswerDto: UpdateAnswerDto,
+    @GetUser() user: User,
   ): Promise<void> {
-    return this.answersService.update(id, updateAnswerDto);
+    return this.answersService.update(id, updateAnswerDto, user);
   }
 
   @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.answersService.delete(id);
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<void> {
+    return this.answersService.delete(id, user);
   }
 }

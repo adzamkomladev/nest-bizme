@@ -12,7 +12,9 @@ import {
 import { Exclude } from 'class-transformer';
 
 import * as bcrypt from 'bcrypt';
+
 import { Question } from '../../questions/entities/question.entity';
+import { Answer } from '../../answers/entities/answer.entity';
 
 @Entity()
 @Unique(['email'])
@@ -36,6 +38,12 @@ export class User extends BaseEntity {
     question => question.user,
   )
   questions: Question[];
+
+  @OneToMany(
+    type => Answer,
+    answer => answer.user,
+  )
+  answers: Answer[];
 
   @CreateDateColumn()
   createdAt: Date;
